@@ -14,11 +14,13 @@
 /* Page allocator.  Hands out memory in page-size (or
    page-multiple) chunks.  See malloc.h for an allocator that
    hands out smaller chunks.
+
    System memory is divided into two "pools" called the kernel
    and user pools.  The user pool is for user (virtual) memory
    pages, the kernel pool for everything else.  The idea here is
    that the kernel needs to have memory for its own operations
    even if user processes are swapping like mad.
+
    By default, half of system RAM is given to the kernel pool and
    half to the user pool.  That should be huge overkill for the
    kernel pool, but that's just fine for demonstration purposes. */
@@ -140,6 +142,12 @@ palloc_free_multiple (void *pages, size_t page_cnt)
 #endif
 
   ASSERT (bitmap_all (pool->used_map, page_idx, page_cnt));
+
+  if(pallocator == 3){              // 메모리 해제를 할때 받아오는 index와 cnt를 buddy 시스템일 때 함수를 호출하여 영역 색칠을 초기화할 준비를 한다.
+    buddy_remove(page_idx,page_cnt);
+  }
+
+  
   bitmap_set_multiple (pool->used_map, page_idx, page_cnt, false);
 }
 
